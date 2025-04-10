@@ -34,57 +34,64 @@ public class EpisodeController {
     private ResourceLoader resourceLoader; 
 
     @PostMapping("/{episodeId}/uploadDash")
-public ResponseEntity<String> uploadDashFiles(
-        @PathVariable Long episodeId,
-        @RequestParam("mpdFile") MultipartFile mpdFile,
-        @RequestParam("m4sFiles") List<MultipartFile> m4sFiles) {
-    
-    Episode episode = episodeService.getEpisodeById(episodeId);
+    public ResponseEntity<String> uploadDashFiles(
+            @PathVariable Long episodeId,
+            @RequestParam("mpdFile") MultipartFile mpdFile,
+            @RequestParam("m4sFiles") List<MultipartFile> m4sFiles) {
 
-    try {
-        String uploadBaseDir = "D:/web2/phim"; 
-        String uploadDir = uploadBaseDir + "/" + episodeId + "/";
-        Path directoryPath = Paths.get(uploadDir);
+        Episode episode = episodeService.getEpisodeById(episodeId);
 
-        if (!Files.exists(directoryPath)) {
-            Files.createDirectories(directoryPath);
-        }
+        try {
+         
+            Resource resource = resourceLoader.getResource("classpath:static/phim/");
+            File uploadBaseDir = resource.getFile();
+            String uploadDir = uploadBaseDir.getAbsolutePath() + "/" + episodeId + "/";
+            Path directoryPath = Paths.get(uploadDir);
 
-        String mpdFileName = mpdFile.getOriginalFilename();
-        if (mpdFileName == null || !mpdFileName.endsWith(".mpd")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid .mpd file");
-        }
-        if (mpdFile.getSize() > 1024 * 1024 * 100) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MPD file too large");
-        }
-        Path mpdPath = directoryPath.resolve(mpdFileName);
-        mpdFile.transferTo(mpdPath.toFile());
-
-        String mpdUrl = "/phim/" + episodeId + "/" + mpdFileName;
-        episode.setVideoUrl(mpdUrl);
-        episodeService.updateEpisode(episodeId, episode);
-
-        for (MultipartFile m4sFile : m4sFiles) {
-            String m4sFileName = m4sFile.getOriginalFilename();
-            if (m4sFileName != null && m4sFileName.endsWith(".m4s")) {
-                if (m4sFile.getSize() > 1024 * 1024 * 100) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "M4S file too large");
-                }
-                Path m4sPath = directoryPath.resolve(m4sFileName);
-                m4sFile.transferTo(m4sPath.toFile());
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid .m4s file");
+            
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
             }
-        }
 
-        return ResponseEntity.ok("Files uploaded successfully. MPD URL: " + mpdUrl);
-    } catch (IOException e) {
-        throw new ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "Upload failed: " + e.getMessage()
-        );
+            // Xử lý file .mpd
+            String mpdFileName = mpdFile.getOriginalFilename();
+            if (mpdFileName == null || !mpdFileName.endsWith(".mpd")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid .mpd file");
+            }
+            if (mpdFile.getSize() > 1024 * 1024 * 100) { // 100MB
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MPD file too large");
+            }
+            Path mpdPath = directoryPath.resolve(mpdFileName);
+            mpdFile.transferTo(mpdPath.toFile());
+
+            // Tạo URL công khai cho file .mpd
+            String mpdUrl = "/phim/" + episodeId + "/" + mpdFileName;
+            episode.setVideoUrl(mpdUrl);
+            episodeService.updateEpisode(episodeId, episode);
+
+            // Xử lý các file .m4s
+            for (MultipartFile m4sFile : m4sFiles) {
+                String m4sFileName = m4sFile.getOriginalFilename();
+                if (m4sFileName != null && m4sFileName.endsWith(".m4s")) {
+                    if (m4sFile.getSize() > 1024 * 1024 * 100) { // 100MB
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "M4S file too large");
+                    }
+                    Path m4sPath = directoryPath.resolve(m4sFileName);
+                    m4sFile.transferTo(m4sPath.toFile());
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid .m4s file");
+                }
+            }
+
+            return ResponseEntity.ok("Files uploaded successfully. MPD URL: " + mpdUrl);
+        } catch (IOException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Upload failed: " + e.getMessage()
+            );
+        }
     }
-}
+
     @GetMapping
     public ResponseEntity<Page<Episode>> getAllEpisodes(Pageable pageable) {
         return new ResponseEntity<>(episodeService.getAllEpisodes(pageable), HttpStatus.OK);
