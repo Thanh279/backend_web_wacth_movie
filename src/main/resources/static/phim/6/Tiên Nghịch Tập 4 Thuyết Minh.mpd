@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="urn:mpeg:dash:schema:mpd:2011"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd"
+	profiles="urn:mpeg:dash:profile:isoff-live:2011"
+	type="static"
+	mediaPresentationDuration="PT22M0.0S"
+	maxSegmentDuration="PT5.0S"
+	minBufferTime="PT11.5S">
+	<ProgramInformation>
+	</ProgramInformation>
+	<ServiceDescription id="0">
+	</ServiceDescription>
+	<Period id="0" start="PT0.0S">
+		<AdaptationSet id="0" contentType="video" startWithSAP="1" segmentAlignment="true" bitstreamSwitching="true" frameRate="25/1" maxWidth="640" maxHeight="360" par="40:17" lang="und">
+			<Representation id="0" mimeType="video/mp4" codecs="avc1.64001e" bandwidth="500000" width="640" height="360" sar="45:34">
+				<SegmentTemplate timescale="12800" initialization="init-stream$RepresentationID$.m4s" media="chunk-stream$RepresentationID$-$Number%05d$.m4s" startNumber="1">
+					<SegmentTimeline>
+						<S t="0" d="73728" r="228" />
+						<S d="12800" />
+					</SegmentTimeline>
+				</SegmentTemplate>
+			</Representation>
+		</AdaptationSet>
+		<AdaptationSet id="1" contentType="audio" startWithSAP="1" segmentAlignment="true" bitstreamSwitching="true" lang="und">
+			<Representation id="1" mimeType="audio/mp4" codecs="mp4a.40.2" bandwidth="128000" audioSamplingRate="48000">
+				<AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2" />
+				<SegmentTemplate timescale="48000" initialization="init-stream$RepresentationID$.m4s" media="chunk-stream$RepresentationID$-$Number%05d$.m4s" startNumber="1">
+					<SegmentTimeline>
+						<S t="0" d="239296" />
+						<S d="240688" />
+						<S d="240608" />
+						<S d="240640" />
+						<S d="236576" />
+						<S d="327648" />
+						<S d="240672" />
+						<S d="240624" r="2" />
+						<S d="240720" />
+						<S d="57328" />
+						<S d="251888" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="240688" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240576" />
+						<S d="240688" />
+						<S d="240640" />
+						<S d="240592" />
+						<S d="240704" />
+						<S d="240608" />
+						<S d="240656" />
+						<S d="240672" />
+						<S d="240608" r="1" />
+						<S d="240656" />
+						<S d="240672" />
+						<S d="240576" />
+						<S d="240672" />
+						<S d="240688" />
+						<S d="240544" />
+						<S d="240736" />
+						<S d="240608" />
+						<S d="240640" />
+						<S d="240624" />
+						<S d="240672" />
+						<S d="240608" />
+						<S d="240640" r="1" />
+						<S d="240608" />
+						<S d="240672" r="1" />
+						<S d="189408" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="240688" />
+						<S d="240640" />
+						<S d="240624" />
+						<S d="240640" />
+						<S d="240656" />
+						<S d="240576" />
+						<S d="240672" />
+						<S d="240688" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="240624" />
+						<S d="240672" />
+						<S d="240624" />
+						<S d="240640" />
+						<S d="240672" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="240688" />
+						<S d="240624" />
+						<S d="240560" />
+						<S d="240688" />
+						<S d="240672" />
+						<S d="240624" />
+						<S d="189424" />
+						<S d="277536" />
+						<S d="240608" />
+						<S d="240624" />
+						<S d="240640" />
+						<S d="240672" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="240672" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240640" r="1" />
+						<S d="240576" />
+						<S d="208928" />
+						<S d="262176" />
+						<S d="240592" />
+						<S d="240656" />
+						<S d="240672" r="1" />
+						<S d="240624" />
+						<S d="240592" />
+						<S d="240688" />
+						<S d="240560" />
+						<S d="240736" />
+						<S d="240592" />
+						<S d="240624" />
+						<S d="240640" />
+						<S d="240656" />
+						<S d="240624" />
+						<S d="240672" r="1" />
+						<S d="240576" />
+						<S d="240624" />
+						<S d="240672" />
+						<S d="240624" />
+						<S d="240672" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="240688" />
+						<S d="240560" />
+						<S d="240672" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240688" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240576" />
+						<S d="28704" />
+						<S d="326656" />
+						<S d="240576" />
+						<S d="240720" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240576" />
+						<S d="240688" />
+						<S d="240656" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="240672" />
+						<S d="240608" />
+						<S d="240656" r="1" />
+						<S d="240640" />
+						<S d="240624" />
+						<S d="240656" r="1" />
+						<S d="240560" />
+						<S d="240704" />
+						<S d="240592" />
+						<S d="240672" />
+						<S d="51216" />
+						<S d="298992" />
+						<S d="240672" />
+						<S d="240560" />
+						<S d="240640" />
+						<S d="240688" />
+						<S d="240672" />
+						<S d="240608" />
+						<S d="240624" r="1" />
+						<S d="240704" />
+						<S d="240576" />
+						<S d="240672" />
+						<S d="14336" />
+						<S d="316400" />
+						<S d="240672" />
+						<S d="240624" r="1" />
+						<S d="240672" />
+						<S d="240608" />
+						<S d="167968" />
+						<S d="314352" />
+						<S d="240592" />
+						<S d="240704" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240640" />
+						<S d="240624" r="1" />
+						<S d="240688" />
+						<S d="240624" r="1" />
+						<S d="240656" />
+						<S d="240624" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="240704" />
+						<S d="240592" />
+						<S d="240672" />
+						<S d="240656" />
+						<S d="240640" />
+						<S d="240576" />
+						<S d="240688" />
+						<S d="240656" />
+						<S d="240592" />
+						<S d="240688" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240592" />
+						<S d="240640" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240624" />
+						<S d="240672" r="1" />
+						<S d="240592" />
+						<S d="88096" />
+						<S d="259088" />
+						<S d="240624" />
+						<S d="240608" />
+						<S d="134160" />
+						<S d="278512" />
+						<S d="240672" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="216048" />
+						<S d="241728" />
+						<S d="240624" />
+						<S d="240640" />
+						<S d="73680" />
+						<S d="404480" />
+						<S d="240704" />
+						<S d="240624" r="2" />
+						<S d="138256" />
+						<S d="356304" />
+						<S d="240720" />
+						<S d="240624" />
+						<S d="240608" />
+						<S d="240672" />
+						<S d="183280" />
+						<S d="357360" />
+						<S d="240672" />
+						<S d="133088" />
+						<S d="240640" />
+						<S d="240672" />
+						<S d="240640" />
+						<S d="240624" />
+						<S d="240672" />
+						<S d="240608" />
+						<S d="240640" />
+						<S d="240656" r="1" />
+						<S d="240592" />
+						<S d="240656" />
+						<S d="240640" />
+						<S d="240672" />
+						<S d="240640" r="1" />
+						<S d="240624" r="1" />
+						<S d="240672" />
+						<S d="240576" />
+						<S d="240688" />
+						<S d="240656" />
+						<S d="240576" />
+						<S d="240688" />
+						<S d="240672" />
+						<S d="240576" />
+						<S d="240704" />
+						<S d="240576" />
+						<S d="240688" />
+						<S d="240640" />
+						<S d="240608" />
+						<S d="2048" />
+						<S d="440320" />
+						<S d="240672" />
+						<S d="240624" />
+						<S d="240656" />
+						<S d="240592" />
+						<S d="240672" />
+						<S d="240640" />
+						<S d="240656" />
+						<S d="224224" />
+					</SegmentTimeline>
+				</SegmentTemplate>
+			</Representation>
+		</AdaptationSet>
+	</Period>
+</MPD>
