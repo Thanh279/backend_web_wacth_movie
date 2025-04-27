@@ -31,7 +31,7 @@ public class EpisodeController {
     private EpisodeService episodeService;
 
     @Autowired
-    private ResourceLoader resourceLoader; 
+    private ResourceLoader resourceLoader;
 
     @PostMapping("/{episodeId}/uploadDash")
     public ResponseEntity<String> uploadDashFiles(
@@ -42,13 +42,12 @@ public class EpisodeController {
         Episode episode = episodeService.getEpisodeById(episodeId);
 
         try {
-         
+
             Resource resource = resourceLoader.getResource("classpath:static/phim/");
             File uploadBaseDir = resource.getFile();
             String uploadDir = uploadBaseDir.getAbsolutePath() + "/" + episodeId + "/";
             Path directoryPath = Paths.get(uploadDir);
 
-            
             if (!Files.exists(directoryPath)) {
                 Files.createDirectories(directoryPath);
             }
@@ -64,12 +63,10 @@ public class EpisodeController {
             Path mpdPath = directoryPath.resolve(mpdFileName);
             mpdFile.transferTo(mpdPath.toFile());
 
-            // Tạo URL công khai cho file .mpd
             String mpdUrl = "/phim/" + episodeId + "/" + mpdFileName;
             episode.setVideoUrl(mpdUrl);
             episodeService.updateEpisode(episodeId, episode);
 
-            // Xử lý các file .m4s
             for (MultipartFile m4sFile : m4sFiles) {
                 String m4sFileName = m4sFile.getOriginalFilename();
                 if (m4sFileName != null && m4sFileName.endsWith(".m4s")) {
@@ -87,14 +84,14 @@ public class EpisodeController {
         } catch (IOException e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Upload failed: " + e.getMessage()
-            );
+                    "Upload failed: " + e.getMessage());
         }
     }
 
     @GetMapping
-    public ResponseEntity<Page<Episode>> getAllEpisodes(Pageable pageable) {
-        return new ResponseEntity<>(episodeService.getAllEpisodes(pageable), HttpStatus.OK);
+    public ResponseEntity<List<Episode>> getAllEpisodes() {
+        List<Episode> episodes = episodeService.getAllEpisodes();
+        return ResponseEntity.ok(episodes);
     }
 
     @GetMapping("/{id}")

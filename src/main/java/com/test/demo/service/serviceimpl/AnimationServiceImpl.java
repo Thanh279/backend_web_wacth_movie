@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.test.demo.dto.AnimationCreateDTO;
@@ -18,6 +19,7 @@ import com.test.demo.reponsitory.EpisodeRepository;
 import com.test.demo.reponsitory.GenreRepository;
 import com.test.demo.reponsitory.StudioRepository;
 import com.test.demo.service.AnimationService;
+
 @Service
 public class AnimationServiceImpl implements AnimationService {
     @Autowired
@@ -32,32 +34,32 @@ public class AnimationServiceImpl implements AnimationService {
     private EpisodeRepository episodeRepository;
 
     @Override
-public Animation createAnimation(AnimationCreateDTO dto) {
-    Director director = directorRepository.findById(dto.getDirectorId())
-            .orElseThrow(() -> new RuntimeException("Director not found"));
-    List<Genre> genres = genreRepository.findAllById(dto.getGenreId());
-    if (genres.size() != dto.getGenreId().size()) {
-        throw new RuntimeException("One or more genres not found");
+    public Animation createAnimation(AnimationCreateDTO dto) {
+        Director director = directorRepository.findById(dto.getDirectorId())
+                .orElseThrow(() -> new RuntimeException("Director not found"));
+        List<Genre> genres = genreRepository.findAllById(dto.getGenreId());
+        if (genres.size() != dto.getGenreId().size()) {
+            throw new RuntimeException("One or more genres not found");
+        }
+        Studio studio = studioRepository.findById(dto.getStudioId())
+                .orElseThrow(() -> new RuntimeException("Studio not found"));
+
+        Animation animation = new Animation();
+        animation.setTitle(dto.getTitle());
+        animation.setReleaseYear(dto.getReleaseYear());
+        animation.setDescription(dto.getDescription());
+        animation.setDirector(director);
+        animation.setGenres(genres);
+        animation.setStudio(studio);
+        animation.setVideoUrl(dto.getVideoUrl());
+        animation.setType(dto.getType());
+        animation.setImgUrl(dto.getImgUrl());
+
+        return animationRepository.save(animation);
     }
-    Studio studio = studioRepository.findById(dto.getStudioId())
-            .orElseThrow(() -> new RuntimeException("Studio not found"));
 
-    Animation animation = new Animation();
-    animation.setTitle(dto.getTitle());
-    animation.setReleaseYear(dto.getReleaseYear());
-    animation.setDescription(dto.getDescription());
-    animation.setDirector(director);
-    animation.setGenres(genres); 
-    animation.setStudio(studio);
-    animation.setVideoUrl(dto.getVideoUrl());
-    animation.setType(dto.getType());
-    animation.setImgUrl(dto.getImgUrl());
-
-    return animationRepository.save(animation);
-}
-    @Override
     public List<Animation> getAllAnimations() {
-        return animationRepository.findAll();
+        return animationRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
     @Override

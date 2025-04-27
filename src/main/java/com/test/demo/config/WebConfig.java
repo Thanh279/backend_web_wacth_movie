@@ -10,17 +10,18 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") 
-                // .allowedOrigins("http://localhost:5173") 
-                .allowedOrigins("https://hh3d.netlify.app")
+                .allowedOrigins("http://localhost:5173") 
+                // .allowedOrigins("https://hh3d.netlify.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") 
                 .allowedHeaders("*") 
-                .allowCredentials(true); 
+                .allowCredentials(true)
+                .exposedHeaders("Cross-Origin-Opener-Policy", "Cross-Origin-Embedder-Policy");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/videos/**")
-                .addResourceLocations("classpath:/static/videos/");
+        registry.addResourceHandler("/phim/**")
+                .addResourceLocations("classpath:/static/phim/");
     }
 
 }

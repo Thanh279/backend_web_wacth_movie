@@ -1,11 +1,17 @@
 package com.test.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "animations")
 public class Animation {
     @Id
@@ -38,12 +44,30 @@ public class Animation {
 
     private String imgUrl;
 
-    @OneToMany(mappedBy = "animation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Episode> episodes = new HashSet<>();
+    @OneToMany(mappedBy = "animation", cascade = CascadeType.ALL)
+    private List<Episode> episodes;
 
     @ManyToMany
     @JoinTable(name = "animation_categories", joinColumns = @JoinColumn(name = "animation_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    @Transient
+    private boolean isUpdated;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     // Getters and setters
     public Long getId() {
@@ -126,11 +150,11 @@ public class Animation {
         this.imgUrl = imgUrl;
     }
 
-    public Set<Episode> getEpisodes() {
+    public List<Episode> getEpisodes() {
         return episodes;
     }
 
-    public void setEpisodes(Set<Episode> episodes) {
+    public void setEpisodes(List<Episode> episodes) {
         this.episodes = episodes;
     }
 

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class EpisodeServiceImpl implements EpisodeService {
@@ -22,8 +23,8 @@ public class EpisodeServiceImpl implements EpisodeService {
     private AnimationRepository animationRepository;
 
     @Override
-    public Page<Episode> getAllEpisodes(Pageable pageable) {
-        return episodeRepository.findAll(pageable);
+    public List<Episode> getAllEpisodes() {
+        return episodeRepository.findAll();
     }
 
     @Override
@@ -50,9 +51,11 @@ public class EpisodeServiceImpl implements EpisodeService {
     public Episode updateEpisode(Long id, Episode episode) {
         Episode existing = getEpisodeById(id);
         existing.setAnimation(episode.getAnimation() != null ? episode.getAnimation() : existing.getAnimation());
-        existing.setEpisodeNumber(episode.getEpisodeNumber() != null ? episode.getEpisodeNumber() : existing.getEpisodeNumber());
+        existing.setEpisodeNumber(
+                episode.getEpisodeNumber() != null ? episode.getEpisodeNumber() : existing.getEpisodeNumber());
         existing.setTitle(episode.getTitle() != null ? episode.getTitle() : existing.getTitle());
-        existing.setReleaseDate(episode.getReleaseDate() != null ? episode.getReleaseDate() : existing.getReleaseDate());
+        existing.setReleaseDate(
+                episode.getReleaseDate() != null ? episode.getReleaseDate() : existing.getReleaseDate());
         existing.setVideoUrl(episode.getVideoUrl() != null ? episode.getVideoUrl() : existing.getVideoUrl());
         return episodeRepository.save(existing);
     }

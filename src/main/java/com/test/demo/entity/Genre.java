@@ -2,7 +2,6 @@ package com.test.demo.entity;
 
 import jakarta.persistence.*;
 
-
 @Entity
 @Table(name = "genres")
 public class Genre {
@@ -13,7 +12,9 @@ public class Genre {
     @Column(name = "name", nullable = false)
     private String name;
 
-    // Getters và setters
+    @Column(name = "normalized_name", nullable = false)
+    private String normalizedName;
+
     public Long getId() {
         return id;
     }
@@ -28,5 +29,13 @@ public class Genre {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNormalizedName() {
+        return normalizedName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
+        this.normalizedName = normalizedName;
     }
 }
