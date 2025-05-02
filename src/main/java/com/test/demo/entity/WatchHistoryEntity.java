@@ -5,26 +5,28 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "watch_history")
+@Table(name = "watch_history", uniqueConstraints = @UniqueConstraint(columnNames = { "username", "seriesId",
+        "seasonNumber", "episodeNumber" }))
 public class WatchHistoryEntity {
 
     @Id
-    private String id = UUID.randomUUID().toString();
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
-    private String seriesId; // Thay movieId thành seriesId
+    private String seriesId;
 
     @Column(nullable = false)
-    private String title; // Có thể là tiêu đề của series hoặc tập phim
+    private String title;
 
     @Column
-    private Integer seasonNumber; // Mùa phim
+    private Integer seasonNumber;
 
     @Column
-    private Integer episodeNumber; // Tập phim
+    private Integer episodeNumber;
 
     private String posterPath;
 
@@ -74,7 +76,7 @@ public class WatchHistoryEntity {
     }
 
     public void setSeasonNumber(Integer seasonNumber) {
-        this.seasonNumber = seasonNumber;
+        this.seasonNumber = seasonNumber != null && seasonNumber > 0 ? seasonNumber : 1;
     }
 
     public Integer getEpisodeNumber() {
@@ -82,7 +84,7 @@ public class WatchHistoryEntity {
     }
 
     public void setEpisodeNumber(Integer episodeNumber) {
-        this.episodeNumber = episodeNumber;
+        this.episodeNumber = episodeNumber != null && episodeNumber > 0 ? episodeNumber : 1;
     }
 
     public String getPosterPath() {

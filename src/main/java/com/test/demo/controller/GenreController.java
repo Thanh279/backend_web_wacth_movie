@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/genres")
@@ -22,7 +24,7 @@ public class GenreController {
         try {
             System.out.println("Nhận được " + genreDTOs.size() + " thể loại từ frontend");
             for (CreateGenreDTO dto : genreDTOs) {
-                System.out.println("Xử lý thể loại: " + dto.getName());
+                System.out.println("Xử lý thể loại: " + dto.getName() + ", tmdbGenreId: " + dto.getTmdbGenreId());
                 if (dto.getName() == null || dto.getName().trim().isEmpty()) {
                     throw new IllegalArgumentException("Tên thể loại không được để trống");
                 }
@@ -31,14 +33,87 @@ public class GenreController {
             return ResponseEntity.ok("Thể loại đã được lưu thành công");
         } catch (Exception e) {
             System.out.println("Lỗi khi lưu thể loại: " + e.getMessage());
-            e.printStackTrace(); // In chi tiết lỗi ra console
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Lỗi khi lưu thể loại: " + e.getMessage());
         }
     }
 
-    // Các endpoint khác nếu cần
     @GetMapping
-    public ResponseEntity<List<Genre>> getAllGenres() {
-        return ResponseEntity.ok(genreService.getAllGenres());
+    public ResponseEntity<Map<String, Object>> getAllGenres() {
+        try {
+            List<Genre> genres = genreService.getAllGenres();
+            System.out.println("Genres fetched: " + genres);
+            Map<String, Object> response = new HashMap<>();
+            response.put("data", genres);
+            response.put("statusCode", 200);
+            response.put("message", "CALL API SUCCESS");
+            System.out.println("Response: " + response);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.out.println("Lỗi khi lấy danh sách thể loại: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> response = new HashMap<>();
+            response.put("statusCode", 500);
+            response.put("message", "Lỗi server: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> getGenreById(@PathVariable Long id) {
+        try {
+            Optional<Genre> genre = genreService.getGenreById(id);
+            if (genre.isPresent()) {
+                Map<String, Object> genreData = new HashMap<>();
+                genreData.put("id", genre.get().getId());
+                genreData.put("name", genre.get().getName());
+                genreData.put("tmdbGenreId", genre.get().getTmdbGenreId());
+                Map<String, Object> response = new HashMap<>();
+                response.put("data", genreData);
+                response.put("statusCode", 200);
+                response.put("message", "CALL API SUCCESS");
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> response = new HashMap<>();
+                response.put("statusCode", 404);
+                response.put("message", "Thể loại không tồn tại với ID: " + id);
+                return ResponseEntity.status(404).body(response);
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi khi lấy thể loại với ID " + id + ": " + e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("statusCode", 400);
+            response.put("message", "Lỗi khi lấy thể loại: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/by-tmdb/{tmdbGenreId}")
+    public ResponseEntity<Map<String, Object>> getGenreByTmdbGenreId(@PathVariable Integer tmdbGenreId) {
+        try {
+            Optional<Genre> genre = genreService.getGenreByTmdbGenreId(tmdbGenreId);
+            if (genre.isPresent()) {
+                Map<String, Object> genreData = new HashMap<>();
+                genreData.put("id", genre.get().getId());
+                genreData.put("name", genre.get().getName());
+                genreData.put("tmdbGenreId", genre.get().getTmdbGenreId());
+                Map<String, Object> response = new HashMap<>();
+                response.put("data", genreData);
+                response.put("statusCode", 200);
+                response.put("message", "CALL API SUCCESS");
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> response = new HashMap<>();
+                response.put("statusCode", 404);
+                response.put("message", "Thể loại không tồn tại với TMDB Genre ID: " + tmdbGenreId);
+                return ResponseEntity.status(404).body(response);
+            }
+        } catch (Exception e) {
+            System.out.println("Lỗi khi lấy thể loại với TMDB Genre ID " + tmdbGenreId + ": " + e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("statusCode", 400);
+            response.put("message", "Lỗi khi lấy thể loại: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 }

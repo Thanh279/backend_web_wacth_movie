@@ -2,12 +2,10 @@ package com.test.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.test.demo.dto.WatchHistoryDTO;
 import com.test.demo.dto.request.WatchHistoryRequest;
 import com.test.demo.entity.WatchHistoryEntity;
 import com.test.demo.reponsitory.WatchHistoryRepository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,15 +31,17 @@ public class WatchHistoryService {
     }
 
     public void addToWatchHistory(String username, WatchHistoryRequest request) {
-     
         WatchHistoryEntity entity = repository
                 .findByUsernameAndSeriesIdAndSeasonNumberAndEpisodeNumber(
-                        username, request.getSeriesId(), request.getSeasonNumber(), request.getEpisodeNumber())
+                        username,
+                        request.getSeriesId(),
+                        request.getSeasonNumber() != null && request.getSeasonNumber() > 0 ? request.getSeasonNumber() : 1,
+                        request.getEpisodeNumber() != null && request.getEpisodeNumber() > 0 ? request.getEpisodeNumber() : 1)
                 .orElseGet(() -> {
                     WatchHistoryEntity newEntity = new WatchHistoryEntity();
                     newEntity.setUsername(username);
                     newEntity.setSeriesId(request.getSeriesId());
-                    newEntity.setTitle(request.getTitle());
+                    newEntity.setTitle(request.getTitle() != null && !request.getTitle().equals("string") ? request.getTitle() : "Không có tiêu đề");
                     newEntity.setSeasonNumber(request.getSeasonNumber());
                     newEntity.setEpisodeNumber(request.getEpisodeNumber());
                     newEntity.setPosterPath(request.getPosterPath());

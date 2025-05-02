@@ -10,11 +10,10 @@ import com.test.demo.reponsitory.EpisodeRepository;
 import com.test.demo.reponsitory.SeriesRepository;
 import com.test.demo.service.SeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,7 @@ public class SeriesServiceImpl implements SeriesService {
     private SeriesRepository seriesRepository;
     @Autowired
     private EpisodeRepository episodeRepository;
+
     @Override
     public Series createSeries(CreateSeriesDTO dto) {
         if (dto == null || dto.getTmdbId() == null || dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
@@ -47,13 +47,13 @@ public class SeriesServiceImpl implements SeriesService {
         series.setVoteAverage(dto.getVoteAverage());
         series.setFirstAirDate(dto.getFirstAirDate());
         series.setPosterPath(dto.getPosterPath());
+        series.setGenreIds(dto.getGenreIds());
         System.out.println("Lưu series: " + dto.getTitle());
         return seriesRepository.save(series);
     }
 
     @Override
     public List<EpisodeDTO> getEpisodes(Long seriesId) {
-        // Example: Fetch from database or external API
         List<EpisodeDTO> episodes = new ArrayList<>();
 
         if (seriesId == 219246) {
@@ -83,6 +83,7 @@ public class SeriesServiceImpl implements SeriesService {
         series.setVoteAverage(dto.getVoteAverage());
         series.setFirstAirDate(dto.getFirstAirDate());
         series.setPosterPath(dto.getPosterPath());
+        series.setGenreIds(dto.getGenreIds());
         return seriesRepository.save(series);
     }
 
@@ -96,22 +97,20 @@ public class SeriesServiceImpl implements SeriesService {
 
     @Override
     public SeriesResponseDTO getSeriesWithPagination(int page, int pageSize) {
-        // Tính toán phân trang
-        Pageable pageable = PageRequest.of(page - 1, pageSize); // page bắt đầu từ 0 trong Spring Data
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<Series> seriesPage = seriesRepository.findAll(pageable);
 
-        // Chuyển đổi danh sách series thành SeriesItemDTO
         List<SeriesItemDTO> seriesItems = seriesPage.getContent().stream().map(series -> {
             SeriesItemDTO item = new SeriesItemDTO();
-            item.setId(series.getTmdbId());
-            item.setName(series.getTitle());
+            item.setTmdbId(series.getTmdbId());
+            item.setTitle(series.getTitle());
             item.setVoteAverage(series.getVoteAverage());
             item.setFirstAirDate(series.getFirstAirDate());
             item.setPosterPath(series.getPosterPath());
+            item.setGenreIds(series.getGenreIds());
             return item;
         }).collect(Collectors.toList());
 
-        // Tạo phản hồi
         SeriesResponseDTO response = new SeriesResponseDTO();
         response.setPage(page);
         response.setResults(seriesItems);
@@ -120,14 +119,23 @@ public class SeriesServiceImpl implements SeriesService {
 
         return response;
     }
+
     @Override
     public List<EpisodeDTO> getEpisodesBySeriesId(Long seriesId) {
-        List<Episode> episodes =episodeRepository.findByAnimationId(seriesId);
+        List<Episode> episodes = episodeRepository.findByAnimationId(seriesId);
         return episodes.stream()
                 .map(episode -> new EpisodeDTO(
                         episode.getEpisodeNumber(),
                         episode.getVideoUrl()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Series> searchSeriesByTitle(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return List.of();
+        }
+        return seriesRepository.findByTitleContainingIgnoreCase(query);
     }
 }

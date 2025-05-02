@@ -27,7 +27,7 @@ public class UserDTO {
 
     private EnumGender gender;
     private String address;
-
+    private String avatarUrl;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;

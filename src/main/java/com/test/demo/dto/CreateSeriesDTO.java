@@ -1,13 +1,17 @@
 package com.test.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CreateSeriesDTO {
     private Long tmdbId;
     private String title;
     private Double voteAverage;
     private String firstAirDate;
     private String posterPath;
+    private String genreIds; // Chuỗi JSON, ví dụ: "[18, 35]"
 
     // Getters and Setters
+    @JsonProperty("tmdbId")
     public Long getTmdbId() {
         return tmdbId;
     }
@@ -46,5 +50,13 @@ public class CreateSeriesDTO {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public String getGenreIds() {
+        return genreIds;
+    }
+
+    public void setGenreIds(String genreIds) {
+        this.genreIds = genreIds;
     }
 }

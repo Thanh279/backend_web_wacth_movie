@@ -61,7 +61,10 @@ public class SecurityConfiguration {
                 "/api/series",
                 "/api/series/**",
                 "api/content",
-                "api/content/**"
+                "api/content/**",
+                "/api/v1/favorites",
+                "/api/v1/favorites/**",
+                "/uploads/**"
         };
 
         http

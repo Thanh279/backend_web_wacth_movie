@@ -10,11 +10,12 @@ import java.util.Optional;
 
 public interface SeriesService {
     Series createSeries(CreateSeriesDTO dto);
+    List<EpisodeDTO> getEpisodes(Long seriesId);
     List<Series> getAllSeries();
     Optional<Series> getSeriesById(Long id);
     Series updateSeries(Long id, CreateSeriesDTO dto);
     void deleteSeries(Long id);
     SeriesResponseDTO getSeriesWithPagination(int page, int pageSize);
-     List<EpisodeDTO> getEpisodes(Long seriesId);
-     List<EpisodeDTO> getEpisodesBySeriesId(Long seriesId);
+    List<EpisodeDTO> getEpisodesBySeriesId(Long seriesId);
+    List<Series> searchSeriesByTitle(String query); 
 }

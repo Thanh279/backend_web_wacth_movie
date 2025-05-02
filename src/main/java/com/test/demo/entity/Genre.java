@@ -15,6 +15,9 @@ public class Genre {
     @Column(name = "normalized_name", nullable = false)
     private String normalizedName;
 
+    @Column(name = "tmdb_genre_id")
+    private Integer tmdbGenreId;
+
     public Long getId() {
         return id;
     }
@@ -37,5 +40,13 @@ public class Genre {
 
     public void setNormalizedName(String normalizedName) {
         this.normalizedName = normalizedName;
+    }
+
+    public Integer getTmdbGenreId() {
+        return tmdbGenreId;
+    }
+
+    public void setTmdbGenreId(Integer tmdbGenreId) {
+        this.tmdbGenreId = tmdbGenreId;
     }
 }

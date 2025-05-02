@@ -1,16 +1,17 @@
 package com.test.demo.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "series")
 public class Series {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long dbId; // ID trong database
+    private Long dbId;
 
     @Column(name = "tmdb_id", unique = true, nullable = false)
-    private Long tmdbId; // ID từ TMDB
+    private Long tmdbId;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -23,6 +24,9 @@ public class Series {
 
     @Column(name = "poster_path")
     private String posterPath;
+
+    @Column(name = "genre_ids", columnDefinition = "TEXT") // Lưu dưới dạng JSON string
+    private String genreIds; // Ví dụ: "[18, 35]"
 
     // Getters and Setters
     public Long getDbId() {
@@ -71,5 +75,13 @@ public class Series {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public String getGenreIds() {
+        return genreIds;
+    }
+
+    public void setGenreIds(String genreIds) {
+        this.genreIds = genreIds;
     }
 }
