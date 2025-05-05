@@ -64,7 +64,11 @@ public class SecurityConfiguration {
                 "api/content/**",
                 "/api/v1/favorites",
                 "/api/v1/favorites/**",
-                "/uploads/**"
+                "/uploads/**",
+                "/api/v1/vip-packages",
+                "/api/v1/vip-packages/**",
+                "api/v1/users/{id}/wallet/deposit",
+                "api/v1/users/{id}/wallet",
         };
 
         http

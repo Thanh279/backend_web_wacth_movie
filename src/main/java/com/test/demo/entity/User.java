@@ -62,6 +62,17 @@ public class User {
     @Schema(description = "Người cập nhật", example = "admin")
     private String updatedBy;
 
+    @Column(nullable = false)
+    @Schema(description = "Trạng thái VIP của người dùng", example = "false")
+    private boolean isVip = false;
+
+    @Schema(description = "Ngày hết hạn VIP", example = "2025-06-01T00:00:00Z")
+    private Instant vipExpiryDate;
+
+    @Column(nullable = false)
+    @Schema(description = "Số dư tiền ảo (coin)", example = "0")
+    private long walletBalance = 0L; 
+
     @PrePersist
     public void beforeCreate() {
         this.createdBy = TokenService.getCurrentUserLogin().isPresent() ? TokenService.getCurrentUserLogin().get() : "";
@@ -74,7 +85,7 @@ public class User {
         this.updatedAt = Instant.now();
     }
 
-    // Getters and setters
+    // Getters and Setters
     public long getId() {
         return id;
     }
@@ -177,5 +188,29 @@ public class User {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public boolean isVip() {
+        return isVip;
+    }
+
+    public void setVip(boolean vip) {
+        isVip = vip;
+    }
+
+    public Instant getVipExpiryDate() {
+        return vipExpiryDate;
+    }
+
+    public void setVipExpiryDate(Instant vipExpiryDate) {
+        this.vipExpiryDate = vipExpiryDate;
+    }
+
+    public long getWalletBalance() {
+        return walletBalance;
+    }
+
+    public void setWalletBalance(long walletBalance) {
+        this.walletBalance = walletBalance;
     }
 }

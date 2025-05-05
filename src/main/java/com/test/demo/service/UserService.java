@@ -5,8 +5,10 @@ import com.test.demo.dto.response.filter.FilterResponse;
 import com.test.demo.dto.response.filter.Meta;
 import com.test.demo.entity.User;
 import com.test.demo.entity.UserImage;
-import com.test.demo.reponsitory.UseRepository; // Fixed typo: UseRepository → UserRepository
+import com.test.demo.entity.VipPackage;
+import com.test.demo.reponsitory.UseRepository;
 import com.test.demo.reponsitory.UserImageRepository;
+import com.test.demo.reponsitory.VipPackageRepository;
 import com.test.demo.util.exception.AppException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,14 +31,19 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    private final UseRepository userRepository; // Fixed typo
+    private final UseRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private UserImageRepository userImageRepository;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private VipPackageRepository vipPackageRepository;
 
-    public UserService(UseRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UseRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public UserDTO mapperUserToUserDTO(User param) {
@@ -50,8 +58,11 @@ public class UserService {
         res.setUpdatedAt(param.getUpdatedAt());
         res.setCreatedBy(param.getCreatedBy());
         res.setUpdatedBy(param.getUpdatedBy());
+        res.setVip(param.isVip());
+        res.setVipExpiryDate(param.getVipExpiryDate());
         Optional<UserImage> userImage = userImageRepository.findByUserId(param.getId());
         res.setAvatarUrl(userImage.map(UserImage::getImageUrl).orElse(null));
+        res.setWalletBalance(param.getWalletBalance());
         return res;
     }
 
@@ -75,7 +86,12 @@ public class UserService {
     }
 
     public FilterResponse filterUser(Specification<User> spec, Pageable pageable) {
-        Page<User> pageUser = this.userRepository.findAll(spec, pageable);
+        Page<User> pageUser;
+        if (spec == null) {
+            pageUser = this.userRepository.findAll(pageable);
+        } else {
+            pageUser = this.userRepository.findAll(spec, pageable);
+        }
 
         Meta meta = new Meta();
         meta.setPage(pageUser.getNumber() + 1);
@@ -163,7 +179,7 @@ public class UserService {
     }
 
     private String saveAvatarFile(MultipartFile file, Long userId) throws IOException {
-        String uploadDir = "uploads/avatars/";
+        String uploadDir = "Uploads/avatars/";
         File directory = new File(uploadDir);
         if (!directory.exists()) {
             directory.mkdirs();
@@ -176,7 +192,7 @@ public class UserService {
         Path filePath = Paths.get(uploadDir, newFilename);
 
         Files.write(filePath, file.getBytes());
-        return "/uploads/avatars/" + newFilename;
+        return "/Uploads/avatars/" + newFilename;
     }
 
     private void deleteOldAvatarFile(String oldAvatarUrl) {
@@ -203,5 +219,93 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    public UserDTO upgradeToVip(Long userId, Long packageId, Long durationDays) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new AppException("Không tìm thấy user với ID: " + userId);
+        }
+
+        User user = userOpt.get();
+        Optional<VipPackage> vipPackageOpt = vipPackageRepository.findById(packageId);
+        if (vipPackageOpt.isEmpty()) {
+            throw new AppException("Không tìm thấy gói VIP với ID: " + packageId);
+        }
+
+        VipPackage vipPackage = vipPackageOpt.get();
+        Instant now = Instant.now();
+        Instant expiryDate = now.plusSeconds(durationDays * 24 * 60 * 60);
+        user.setVip(true);
+        user.setVipExpiryDate(expiryDate);
+        userRepository.save(user);
+
+        emailService.sendEmailFromTemplateSync(
+            user.getEmail(),
+            "Xác nhận nâng cấp VIP",
+            "vip_confirmation",
+            user.getName()
+        );
+
+        return mapperUserToUserDTO(user);
+    }
+
+    public UserDTO upgradeToVipWithWallet(Long userId, Long packageId, Long durationDays) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new AppException("Không tìm thấy user với ID: " + userId);
+        }
+
+        User user = userOpt.get();
+        Optional<VipPackage> vipPackageOpt = vipPackageRepository.findById(packageId);
+        if (vipPackageOpt.isEmpty()) {
+            throw new AppException("Không tìm thấy gói VIP với ID: " + packageId);
+        }
+
+        VipPackage vipPackage = vipPackageOpt.get();
+        if (user.getWalletBalance() < vipPackage.getPrice()) {
+            throw new AppException("Số dư không đủ để thanh toán gói VIP");
+        }
+
+        user.setWalletBalance(user.getWalletBalance() - vipPackage.getPrice());
+        Instant now = Instant.now();
+        Instant expiryDate = now.plusSeconds(durationDays * 24 * 60 * 60);
+        user.setVip(true);
+        user.setVipExpiryDate(expiryDate);
+        userRepository.save(user);
+
+        emailService.sendEmailFromTemplateSync(
+            user.getEmail(),
+            "Xác nhận nâng cấp VIP bằng ví",
+            "vip_confirmation",
+            user.getName()
+        );
+
+        return mapperUserToUserDTO(user);
+    }
+
+    public long getWalletBalance(Long userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new AppException("Không tìm thấy user với ID: " + userId);
+        }
+        return userOpt.get().getWalletBalance();
+    }
+
+    public UserDTO depositMoney(Long userId, long amount) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new AppException("Không tìm thấy user với ID: " + userId);
+        }
+
+        if (amount <= 0) {
+            throw new AppException("Số tiền nạp phải lớn hơn 0");
+        }
+
+        User user = userOpt.get();
+        user.setWalletBalance(user.getWalletBalance() + amount);
+        userRepository.save(user);
+
+        return mapperUserToUserDTO(user);
     }
 }

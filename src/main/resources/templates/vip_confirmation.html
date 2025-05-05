@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận nâng cấp VIP</title>
+</head>
+<body>
+    <h1>Xin chào <span th:text="${name}"></span>,</h1>
+    <p>Chúc mừng bạn đã nâng cấp thành công tài khoản VIP!</p>
+    <p>Trạng thái VIP của bạn sẽ có hiệu lực đến <span th:text="${#temporals.format(vipExpiryDate, 'dd/MM/yyyy HH:mm:ss')}"></span>.</p>
+    <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+    <p>Trân trọng,<br>Đội ngũ Thành.Huy</p>
+</body>
+</html>
